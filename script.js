@@ -1,19 +1,25 @@
-// ============================================
-// PRATIK 3D CYBER UNIVERSE
-// Frontend only
-// Three.js + JavaScript + GSAP
-// ============================================
+// ======================================================
+// PRATIK — CINEMATIC 3D CYBER UNIVERSE
+// VERSION 2
+// FRONTEND ONLY
+// Three.js + GSAP
+// ======================================================
 
 
-// --------------------------------------------
-// BASIC SETUP
-// --------------------------------------------
+// ======================================================
+// 1. BASIC SETUP
+// ======================================================
 
 const canvas = document.getElementById("universe");
 
 const scene = new THREE.Scene();
 
-scene.fog = new THREE.FogExp2(0x000000, 0.0015);
+scene.background = new THREE.Color(0x000005);
+
+scene.fog = new THREE.FogExp2(
+    0x000005,
+    0.0012
+);
 
 
 const camera = new THREE.PerspectiveCamera(
@@ -23,13 +29,12 @@ const camera = new THREE.PerspectiveCamera(
     3000
 );
 
-camera.position.set(0, 20, 55);
+camera.position.set(0, 8, 65);
 
 
 const renderer = new THREE.WebGLRenderer({
     canvas: canvas,
-    antialias: true,
-    alpha: false
+    antialias: true
 });
 
 renderer.setPixelRatio(
@@ -41,103 +46,119 @@ renderer.setSize(
     window.innerHeight
 );
 
-renderer.outputEncoding = THREE.sRGBEncoding;
 
+// ======================================================
+// 2. LIGHT
+// ======================================================
 
-// --------------------------------------------
-// LIGHTING
-// --------------------------------------------
-
-const ambientLight = new THREE.AmbientLight(
-    0x404040,
-    2
+scene.add(
+    new THREE.AmbientLight(
+        0xffffff,
+        0.3
+    )
 );
 
-scene.add(ambientLight);
-
-
-const sunLight = new THREE.PointLight(
-    0xffffff,
-    4,
-    500
-);
+const sunLight =
+    new THREE.PointLight(
+        0xffffff,
+        5,
+        500
+    );
 
 scene.add(sunLight);
 
 
-// --------------------------------------------
-// STAR FIELD
-// --------------------------------------------
+// ======================================================
+// 3. STAR UNIVERSE
+// ======================================================
 
-const starGeometry = new THREE.BufferGeometry();
+const starGeometry =
+    new THREE.BufferGeometry();
 
-const starCount = 12000;
+const STAR_COUNT = 18000;
 
-const starPositions = new Float32Array(
-    starCount * 3
-);
+const positions =
+    new Float32Array(
+        STAR_COUNT * 3
+    );
 
-for (let i = 0; i < starCount * 3; i += 3) {
+for (
+    let i = 0;
+    i < STAR_COUNT * 3;
+    i += 3
+) {
 
     const radius =
-        300 + Math.random() * 1200;
+        250 +
+        Math.random() * 1200;
 
     const theta =
-        Math.random() * Math.PI * 2;
+        Math.random() *
+        Math.PI * 2;
 
     const phi =
         Math.acos(
-            (Math.random() * 2) - 1
+            Math.random() * 2 - 1
         );
 
-    starPositions[i] =
+
+    positions[i] =
         radius *
         Math.sin(phi) *
         Math.cos(theta);
 
-    starPositions[i + 1] =
+    positions[i + 1] =
         radius *
         Math.sin(phi) *
         Math.sin(theta);
 
-    starPositions[i + 2] =
+    positions[i + 2] =
         radius *
         Math.cos(phi);
 }
 
+
 starGeometry.setAttribute(
     "position",
     new THREE.BufferAttribute(
-        starPositions,
+        positions,
         3
     )
 );
 
 
-const starMaterial = new THREE.PointsMaterial({
+const starMaterial =
+    new THREE.PointsMaterial({
 
-    color: 0xffffff,
+        color: 0xffffff,
 
-    size: 1.3,
+        size: 1.25,
 
-    transparent: true,
+        transparent: true,
 
-    opacity: 0.85
+        opacity: 0.85
 
-});
+    });
 
 
-const stars = new THREE.Points(
-    starGeometry,
-    starMaterial
-);
+const stars =
+    new THREE.Points(
+        starGeometry,
+        starMaterial
+    );
 
 scene.add(stars);
 
 
-// --------------------------------------------
-// SUN
-// --------------------------------------------
+// ======================================================
+// 4. SUN
+// ======================================================
+
+const sunGroup =
+    new THREE.Group();
+
+scene.add(sunGroup);
+
 
 const sunGeometry =
     new THREE.SphereGeometry(
@@ -149,19 +170,20 @@ const sunGeometry =
 
 const sunMaterial =
     new THREE.MeshBasicMaterial({
-        color: 0xffaa33
+        color: 0xff9d22
     });
 
 
-const sun = new THREE.Mesh(
-    sunGeometry,
-    sunMaterial
-);
+const sun =
+    new THREE.Mesh(
+        sunGeometry,
+        sunMaterial
+    );
 
-scene.add(sun);
+sunGroup.add(sun);
 
 
-// Sun glow
+// SUN GLOW
 
 const glowGeometry =
     new THREE.SphereGeometry(
@@ -174,53 +196,189 @@ const glowGeometry =
 const glowMaterial =
     new THREE.MeshBasicMaterial({
 
-        color: 0xff6600,
+        color: 0xff5500,
 
         transparent: true,
 
-        opacity: 0.12
+        opacity: 0.15
 
     });
 
 
-const glow = new THREE.Mesh(
-    glowGeometry,
-    glowMaterial
-);
+const sunGlow =
+    new THREE.Mesh(
+        glowGeometry,
+        glowMaterial
+    );
 
-scene.add(glow);
+sunGroup.add(sunGlow);
 
 
-// --------------------------------------------
-// PLANETS
-// --------------------------------------------
+// ======================================================
+// 5. PLANET DATA
+// ======================================================
+
+const planetData = [
+
+    {
+        name: "ABOUT",
+
+        title: "THE EXPLORER",
+
+        description:
+            "I am Pratik — a B.Tech CSE Cyber Security student exploring technology, software, systems and the digital world.",
+
+        color: 0x287cff,
+
+        radius: 3,
+
+        distance: 20,
+
+        speed: 0.003,
+
+        cameraZ: 17
+
+    },
+
+    {
+
+        name: "CYBER",
+
+        title: "CYBER SECURITY",
+
+        description:
+            "My strongest interest is cybersecurity — ethical hacking, web security, phishing awareness, account security and understanding how attacks actually work.",
+
+        color: 0x7b3cff,
+
+        radius: 3.5,
+
+        distance: 35,
+
+        speed: 0.0023,
+
+        cameraZ: 32
+
+    },
+
+    {
+
+        name: "CODE",
+
+        title: "BUILDING WITH CODE",
+
+        description:
+            "I am learning C, DSA, web development, backend technologies and gradually moving towards building real software and security projects.",
+
+        color: 0x00d9ff,
+
+        radius: 3.2,
+
+        distance: 50,
+
+        speed: 0.0018,
+
+        cameraZ: 47
+
+    },
+
+    {
+
+        name: "PROJECTS",
+
+        title: "DIGITAL EXPERIMENTS",
+
+        description:
+            "Websites, AI experiments, futuristic interfaces and cybersecurity projects are part of my journey from beginner to builder.",
+
+        color: 0xff357a,
+
+        radius: 3.7,
+
+        distance: 65,
+
+        speed: 0.0014,
+
+        cameraZ: 62
+
+    },
+
+    {
+
+        name: "BHUMIX",
+
+        title: "BHUMIX CORE",
+
+        description:
+            "Bhumix Core is my tech-focused creative space where I explore cybersecurity, AI, futuristic technology and digital experiments.",
+
+        color: 0xff4d00,
+
+        radius: 4,
+
+        distance: 82,
+
+        speed: 0.001,
+
+        cameraZ: 79
+
+    },
+
+    {
+
+        name: "FUTURE",
+
+        title: "THE NEXT CHAPTER",
+
+        description:
+            "This universe is still expanding. More projects, experiments and ideas are coming.",
+
+        color: 0x4dff88,
+
+        radius: 3,
+
+        distance: 100,
+
+        speed: 0.0008,
+
+        cameraZ: 97
+
+    }
+
+];
+
+
+// ======================================================
+// 6. CREATE PLANETS
+// ======================================================
 
 const planets = [];
 
-function createPlanet(
-    name,
-    radius,
-    distance,
-    color,
-    speed,
-    section
-) {
+
+function createPlanet(data) {
+
+    const orbit =
+        new THREE.Group();
+
+    scene.add(orbit);
+
 
     const geometry =
         new THREE.SphereGeometry(
-            radius,
-            32,
-            32
+            data.radius,
+            48,
+            48
         );
+
 
     const material =
         new THREE.MeshStandardMaterial({
 
-            color: color,
+            color: data.color,
 
-            roughness: 0.7,
+            roughness: 0.65,
 
-            metalness: 0.2
+            metalness: 0.25
 
         });
 
@@ -232,96 +390,52 @@ function createPlanet(
         );
 
 
-    const orbit =
-        new THREE.Group();
+    planet.position.x =
+        data.distance;
 
-
-    scene.add(orbit);
 
     orbit.add(planet);
 
 
-    planet.position.x = distance;
+    // --------------------------
+    // ATMOSPHERE
+    // --------------------------
+
+    const atmosphereGeometry =
+        new THREE.SphereGeometry(
+            data.radius * 1.12,
+            48,
+            48
+        );
 
 
-    planets.push({
+    const atmosphereMaterial =
+        new THREE.MeshBasicMaterial({
 
-        name: name,
+            color: data.color,
 
-        mesh: planet,
+            transparent: true,
 
-        orbit: orbit,
+            opacity: 0.12,
 
-        speed: speed,
+            side: THREE.BackSide
 
-        section: section,
-
-        distance: distance
-
-    });
-
-}
+        });
 
 
-// --------------------------------------------
-// YOUR UNIVERSE
-// --------------------------------------------
-
-createPlanet(
-    "ABOUT ME",
-    2.2,
-    15,
-    0x3399ff,
-    0.004,
-    1
-);
+    const atmosphere =
+        new THREE.Mesh(
+            atmosphereGeometry,
+            atmosphereMaterial
+        );
 
 
-createPlanet(
-    "CYBER SECURITY",
-    2.6,
-    23,
-    0x8b5cf6,
-    0.0025,
-    2
-);
+    planet.add(atmosphere);
 
 
-createPlanet(
-    "PROJECTS",
-    2.1,
-    31,
-    0x00ffff,
-    0.002,
-    3
-);
-
-
-createPlanet(
-    "BHUMIX CORE",
-    2.8,
-    40,
-    0xff3366,
-    0.0017,
-    4
-);
-
-
-createPlanet(
-    "CONTACT",
-    2,
-    49,
-    0x44ff88,
-    0.0013,
-    5
-);
-
-
-// --------------------------------------------
-// ORBIT RINGS
-// --------------------------------------------
-
-planets.forEach((p) => {
+    // --------------------------
+    // ORBIT
+    // --------------------------
 
     const curve =
         new THREE.EllipseCurve(
@@ -329,44 +443,43 @@ planets.forEach((p) => {
             0,
             0,
 
-            p.distance,
-            p.distance,
+            data.distance,
+            data.distance,
 
             0,
             Math.PI * 2,
 
             false,
-
             0
 
         );
 
 
     const points =
-        curve.getPoints(150);
+        curve.getPoints(180);
 
 
-    const geometry =
+    const orbitGeometry =
         new THREE.BufferGeometry()
             .setFromPoints(points);
 
 
-    const material =
+    const orbitMaterial =
         new THREE.LineBasicMaterial({
 
-            color: 0x444444,
+            color: data.color,
 
             transparent: true,
 
-            opacity: 0.35
+            opacity: 0.12
 
         });
 
 
     const orbitLine =
         new THREE.LineLoop(
-            geometry,
-            material
+            orbitGeometry,
+            orbitMaterial
         );
 
 
@@ -376,172 +489,93 @@ planets.forEach((p) => {
 
     scene.add(orbitLine);
 
-});
+
+    planets.push({
+
+        data,
+
+        orbit,
+
+        planet,
+
+        atmosphere,
+
+        orbitLine
+
+    });
+
+}
 
 
-// --------------------------------------------
-// SECTION DATA
-// --------------------------------------------
-
-const sections = [
-
-    {
-
-        number: "01",
-
-        title: "THE EXPLORER",
-
-        description:
-            "Welcome to my digital universe. I am Pratik — a CSE Cyber Security student exploring technology, software and the world of cybersecurity."
-
-    },
-
-    {
-
-        number: "02",
-
-        title: "ABOUT ME",
-
-        description:
-            "B.Tech CSE Cyber Security student. I enjoy understanding how computers, software, operating systems and networks work beneath the surface."
-
-    },
-
-    {
-
-        number: "03",
-
-        title: "CYBER SECURITY",
-
-        description:
-            "My strongest interest is cybersecurity — ethical hacking, web security, phishing awareness, account security and understanding how real cyber attacks work."
-
-    },
-
-    {
-
-        number: "04",
-
-        title: "PROJECTS",
-
-        description:
-            "I build websites, experiment with AI, explore frontend development and gradually move towards backend development, applications and security projects."
-
-    },
-
-    {
-
-        number: "05",
-
-        title: "BHUMIX CORE",
-
-        description:
-            "Bhumix Core is my tech-focused creative space where I explore cybersecurity, futuristic technology, AI and digital experiments."
-
-    },
-
-    {
-
-        number: "06",
-
-        title: "CONNECT",
-
-        description:
-            "The universe is still expanding. More projects, experiments and ideas are coming."
-
-    }
-
-];
+planetData.forEach(
+    createPlanet
+);
 
 
-// --------------------------------------------
-// SCROLL SYSTEM
-// --------------------------------------------
+// ======================================================
+// 7. SECTION UI
+// ======================================================
 
-let scrollProgress = 0;
+const title =
+    document.getElementById(
+        "section-title"
+    );
 
-let targetCameraZ = 55;
+const description =
+    document.getElementById(
+        "section-description"
+    );
 
-let currentCameraZ = 55;
+const number =
+    document.getElementById(
+        "section-number"
+    );
+
+
+// ======================================================
+// 8. SCROLL → CAMERA
+// ======================================================
+
+let scrollTarget = 0;
+
+let scrollCurrent = 0;
 
 
 window.addEventListener(
     "scroll",
     () => {
 
-        const maxScroll =
+        const max =
             document.body.scrollHeight -
             window.innerHeight;
 
 
-        scrollProgress =
-            window.scrollY /
-            maxScroll;
-
-
-        targetCameraZ =
-            55 -
-            scrollProgress * 42;
-
-
-        updateSection(
-            scrollProgress
-        );
+        scrollTarget =
+            window.scrollY / max;
 
     }
 );
 
 
-// --------------------------------------------
-// SECTION UI
-// --------------------------------------------
+// ======================================================
+// 9. ACTIVE PLANET
+// ======================================================
 
-const numberElement =
-    document.getElementById(
-        "section-number"
-    );
-
-const titleElement =
-    document.getElementById(
-        "section-title"
-    );
-
-const descriptionElement =
-    document.getElementById(
-        "section-description"
-    );
+let activePlanet = -1;
 
 
-let currentSection = -1;
+function updateSection(index) {
+
+    if (
+        index === activePlanet
+    ) return;
 
 
-function updateSection(progress) {
-
-    let index =
-        Math.floor(
-            progress * sections.length
-        );
-
-
-    index =
-        Math.max(
-            0,
-            Math.min(
-                sections.length - 1,
-                index
-            )
-        );
-
-
-    if (index === currentSection)
-        return;
-
-
-    currentSection = index;
+    activePlanet = index;
 
 
     const data =
-        sections[index];
+        planetData[index];
 
 
     gsap.to(
@@ -550,17 +584,22 @@ function updateSection(progress) {
 
             opacity: 0,
 
+            y: 20,
+
             duration: 0.25,
 
             onComplete: () => {
 
-                numberElement.innerText =
-                    data.number;
+                number.innerText =
+                    String(index + 1)
+                        .padStart(2, "0");
 
-                titleElement.innerText =
+
+                title.innerText =
                     data.title;
 
-                descriptionElement.innerText =
+
+                description.innerText =
                     data.description;
 
 
@@ -569,6 +608,8 @@ function updateSection(progress) {
                     {
 
                         opacity: 1,
+
+                        y: 0,
 
                         duration: 0.6
 
@@ -583,39 +624,133 @@ function updateSection(progress) {
 }
 
 
-// --------------------------------------------
-// MOUSE PARALLAX
-// --------------------------------------------
+// ======================================================
+// 10. CAMERA CINEMATIC MOVEMENT
+// ======================================================
+
+function updateCamera() {
+
+    const total =
+        planetData.length;
+
+
+    const exact =
+        scrollCurrent *
+        (total - 1);
+
+
+    const index =
+        Math.floor(exact);
+
+
+    const nextIndex =
+        Math.min(
+            index + 1,
+            total - 1
+        );
+
+
+    const localProgress =
+        exact - index;
+
+
+    const currentPlanet =
+        planetData[index];
+
+
+    const nextPlanet =
+        planetData[nextIndex];
+
+
+    const currentZ =
+        currentPlanet.cameraZ;
+
+
+    const nextZ =
+        nextPlanet.cameraZ;
+
+
+    const desiredZ =
+        THREE.MathUtils.lerp(
+            currentZ,
+            nextZ,
+            localProgress
+        );
+
+
+    camera.position.z =
+        desiredZ;
+
+
+    // cinematic vertical movement
+
+    camera.position.y =
+        THREE.MathUtils.lerp(
+            8,
+            3,
+            localProgress
+        );
+
+
+    // subtle X movement
+
+    camera.position.x =
+        Math.sin(
+            scrollCurrent * Math.PI
+        ) * 3;
+
+
+    camera.lookAt(
+        0,
+        0,
+        0
+    );
+
+
+    updateSection(index);
+
+}
+
+
+// ======================================================
+// 11. MOUSE MOVEMENT
+// ======================================================
+
+let mouseTargetX = 0;
+
+let mouseTargetY = 0;
 
 let mouseX = 0;
-let mouseY = 0;
 
-let targetMouseX = 0;
-let targetMouseY = 0;
+let mouseY = 0;
 
 
 window.addEventListener(
     "mousemove",
     (event) => {
 
-        targetMouseX =
-            (event.clientX /
+        mouseTargetX =
+            (
+                event.clientX /
                 window.innerWidth -
-                0.5) * 2;
+                0.5
+            ) * 2;
 
 
-        targetMouseY =
-            (event.clientY /
+        mouseTargetY =
+            (
+                event.clientY /
                 window.innerHeight -
-                0.5) * 2;
+                0.5
+            ) * 2;
 
     }
 );
 
 
-// --------------------------------------------
-// ANIMATION LOOP
-// --------------------------------------------
+// ======================================================
+// 12. ANIMATION LOOP
+// ======================================================
 
 const clock =
     new THREE.Clock();
@@ -628,85 +763,108 @@ function animate() {
     );
 
 
-    const elapsed =
+    const time =
         clock.getElapsedTime();
 
 
-    // Sun rotation
+    // --------------------------------
+    // SMOOTH SCROLL
+    // --------------------------------
 
-    sun.rotation.y =
-        elapsed * 0.15;
+    scrollCurrent +=
+        (
+            scrollTarget -
+            scrollCurrent
+        ) * 0.045;
 
 
-    glow.scale.setScalar(
+    updateCamera();
+
+
+    // --------------------------------
+    // SUN
+    // --------------------------------
+
+    sun.rotation.y += 0.003;
+
+
+    sunGlow.scale.setScalar(
+
         1 +
-        Math.sin(elapsed * 2) * 0.04
+        Math.sin(time * 2) * 0.04
+
     );
 
 
-    // Stars movement
+    // --------------------------------
+    // PLANETS
+    // --------------------------------
+
+    planets.forEach(
+        (p) => {
+
+            p.orbit.rotation.y +=
+                p.data.speed;
+
+
+            p.planet.rotation.y +=
+                0.006;
+
+
+            const pulse =
+                1 +
+                Math.sin(
+                    time * 1.5
+                ) * 0.015;
+
+
+            p.atmosphere.scale.setScalar(
+                pulse
+            );
+
+        }
+    );
+
+
+    // --------------------------------
+    // STARS
+    // --------------------------------
 
     stars.rotation.y =
-        elapsed * 0.002;
+        time * 0.001;
 
 
-    // Planet orbit
-
-    planets.forEach((p) => {
-
-        p.orbit.rotation.y +=
-            p.speed;
+    stars.rotation.x =
+        time * 0.0003;
 
 
-        p.mesh.rotation.y +=
-            0.01;
-
-    });
-
-
-    // Smooth camera
-
-    currentCameraZ +=
-        (
-            targetCameraZ -
-            currentCameraZ
-        ) * 0.04;
-
-
-    camera.position.z =
-        currentCameraZ;
-
-
-    // Mouse parallax
+    // --------------------------------
+    // MOUSE PARALLAX
+    // --------------------------------
 
     mouseX +=
         (
-            targetMouseX -
+            mouseTargetX -
             mouseX
-        ) * 0.03;
+        ) * 0.025;
 
 
     mouseY +=
         (
-            targetMouseY -
+            mouseTargetY -
             mouseY
-        ) * 0.03;
+        ) * 0.025;
 
 
-    camera.position.x =
-        mouseX * 4;
+    camera.rotation.z =
+        mouseX * 0.01;
 
 
-    camera.position.y =
-        20 -
-        mouseY * 3;
-
-
-    camera.lookAt(
-        0,
-        0,
-        0
-    );
+    camera.position.x +=
+        (
+            mouseX * 2 -
+            camera.position.x
+        ) * 0.01;
 
 
     renderer.render(
@@ -720,9 +878,9 @@ function animate() {
 animate();
 
 
-// --------------------------------------------
-// RESIZE
-// --------------------------------------------
+// ======================================================
+// 13. RESIZE
+// ======================================================
 
 window.addEventListener(
     "resize",
@@ -745,33 +903,40 @@ window.addEventListener(
 );
 
 
-// --------------------------------------------
-// LOADER
-// --------------------------------------------
+// ======================================================
+// 14. LOADER
+// ======================================================
 
 window.addEventListener(
     "load",
     () => {
 
-        setTimeout(() => {
+        setTimeout(
+            () => {
 
-            const loader =
-                document.getElementById(
-                    "loader"
+                const loader =
+                    document.getElementById(
+                        "loader"
+                    );
+
+
+                loader.style.opacity =
+                    "0";
+
+
+                setTimeout(
+                    () => {
+
+                        loader.style.display =
+                            "none";
+
+                    },
+                    1000
                 );
 
-
-            loader.style.opacity = "0";
-
-
-            setTimeout(() => {
-
-                loader.style.display =
-                    "none";
-
-            }, 1000);
-
-        }, 1200);
+            },
+            1000
+        );
 
     }
 );
