@@ -1,158 +1,299 @@
-// ======================================================
-// PRATIK — CINEMATIC 3D CYBER UNIVERSE
-// VERSION 2
-// FRONTEND ONLY
-// Three.js + GSAP
-// ======================================================
+// ============================================================
+// PRATIK — IMMERSIVE DIGITAL UNIVERSE
+// V4
+// ============================================================
 
 
-// ======================================================
-// 1. BASIC SETUP
-// ======================================================
+// ------------------------------------------------------------
+// SETUP
+// ------------------------------------------------------------
 
-const canvas = document.getElementById("universe");
+const canvas =
+    document.getElementById("universe");
 
-const scene = new THREE.Scene();
+const scene =
+    new THREE.Scene();
 
-scene.background = new THREE.Color(0x000005);
+scene.background =
+    new THREE.Color(0x000004);
 
-scene.fog = new THREE.FogExp2(
-    0x000005,
-    0.0012
+scene.fog =
+    new THREE.FogExp2(
+        0x000004,
+        0.0008
+    );
+
+
+const camera =
+    new THREE.PerspectiveCamera(
+        52,
+        innerWidth / innerHeight,
+        0.1,
+        3000
+    );
+
+camera.position.set(
+    0,
+    5,
+    75
 );
 
 
-const camera = new THREE.PerspectiveCamera(
-    60,
-    window.innerWidth / window.innerHeight,
-    0.1,
-    3000
-);
-
-camera.position.set(0, 8, 65);
-
-
-const renderer = new THREE.WebGLRenderer({
-    canvas: canvas,
-    antialias: true
-});
+const renderer =
+    new THREE.WebGLRenderer({
+        canvas,
+        antialias: true,
+        powerPreference: "high-performance"
+    });
 
 renderer.setPixelRatio(
-    Math.min(window.devicePixelRatio, 2)
+    Math.min(
+        devicePixelRatio,
+        2
+    )
 );
 
 renderer.setSize(
-    window.innerWidth,
-    window.innerHeight
+    innerWidth,
+    innerHeight
 );
 
 
-// ======================================================
-// 2. LIGHT
-// ======================================================
+// ------------------------------------------------------------
+// LIGHTING
+// ------------------------------------------------------------
 
 scene.add(
     new THREE.AmbientLight(
-        0xffffff,
-        0.3
+        0x6b7899,
+        .25
     )
 );
 
-const sunLight =
-    new THREE.PointLight(
-        0xffffff,
-        5,
-        500
+const rimLight =
+    new THREE.DirectionalLight(
+        0x6ca8ff,
+        1.2
     );
 
-scene.add(sunLight);
+rimLight.position.set(
+    -50,
+    30,
+    50
+);
+
+scene.add(rimLight);
 
 
-// ======================================================
-// 3. STAR UNIVERSE
-// ======================================================
+// ------------------------------------------------------------
+// STAR FIELD
+// ------------------------------------------------------------
 
-const starGeometry =
-    new THREE.BufferGeometry();
-
-const STAR_COUNT = 18000;
-
-const positions =
-    new Float32Array(
-        STAR_COUNT * 3
-    );
-
-for (
-    let i = 0;
-    i < STAR_COUNT * 3;
-    i += 3
+function createStars(
+    amount,
+    size,
+    color,
+    spread
 ) {
 
-    const radius =
-        250 +
-        Math.random() * 1200;
+    const geometry =
+        new THREE.BufferGeometry();
 
-    const theta =
-        Math.random() *
-        Math.PI * 2;
-
-    const phi =
-        Math.acos(
-            Math.random() * 2 - 1
+    const positions =
+        new Float32Array(
+            amount * 3
         );
 
+    for (
+        let i = 0;
+        i < amount * 3;
+        i += 3
+    ) {
 
-    positions[i] =
-        radius *
-        Math.sin(phi) *
-        Math.cos(theta);
+        positions[i] =
+            (Math.random() - .5) *
+            spread;
 
-    positions[i + 1] =
-        radius *
-        Math.sin(phi) *
-        Math.sin(theta);
+        positions[i + 1] =
+            (Math.random() - .5) *
+            spread;
 
-    positions[i + 2] =
-        radius *
-        Math.cos(phi);
+        positions[i + 2] =
+            (Math.random() - .5) *
+            spread;
+    }
+
+    geometry.setAttribute(
+        "position",
+        new THREE.BufferAttribute(
+            positions,
+            3
+        )
+    );
+
+    const material =
+        new THREE.PointsMaterial({
+            color,
+            size,
+            transparent: true,
+            opacity: .8,
+            depthWrite: false
+        });
+
+    const field =
+        new THREE.Points(
+            geometry,
+            material
+        );
+
+    scene.add(field);
+
+    return field;
 }
 
 
-starGeometry.setAttribute(
-    "position",
-    new THREE.BufferAttribute(
-        positions,
-        3
-    )
-);
-
-
-const starMaterial =
-    new THREE.PointsMaterial({
-
-        color: 0xffffff,
-
-        size: 1.25,
-
-        transparent: true,
-
-        opacity: 0.85
-
-    });
-
-
-const stars =
-    new THREE.Points(
-        starGeometry,
-        starMaterial
+const starsFar =
+    createStars(
+        18000,
+        1.15,
+        0xffffff,
+        1800
     );
 
-scene.add(stars);
+
+const starsNear =
+    createStars(
+        7000,
+        .7,
+        0x9bcaff,
+        650
+    );
 
 
-// ======================================================
-// 4. SUN
-// ======================================================
+// ------------------------------------------------------------
+// NEBULA
+// ------------------------------------------------------------
+
+function nebula(
+    color,
+    x,
+    y,
+    z,
+    count,
+    spread
+) {
+
+    const geometry =
+        new THREE.BufferGeometry();
+
+    const positions =
+        new Float32Array(
+            count * 3
+        );
+
+    for (
+        let i = 0;
+        i < count * 3;
+        i += 3
+    ) {
+
+        const angle =
+            Math.random() *
+            Math.PI * 2;
+
+        const radius =
+            Math.pow(
+                Math.random(),
+                1.7
+            ) * spread;
+
+        positions[i] =
+            Math.cos(angle) *
+            radius;
+
+        positions[i + 1] =
+            (Math.random() - .5) *
+            spread *
+            .35;
+
+        positions[i + 2] =
+            Math.sin(angle) *
+            radius;
+    }
+
+    geometry.setAttribute(
+        "position",
+        new THREE.BufferAttribute(
+            positions,
+            3
+        )
+    );
+
+    const material =
+        new THREE.PointsMaterial({
+            color,
+            size: 2,
+            transparent: true,
+            opacity: .09,
+            blending:
+                THREE.AdditiveBlending,
+            depthWrite: false
+        });
+
+    const cloud =
+        new THREE.Points(
+            geometry,
+            material
+        );
+
+    cloud.position.set(
+        x,
+        y,
+        z
+    );
+
+    scene.add(cloud);
+
+    return cloud;
+}
+
+
+const nebulaBlue =
+    nebula(
+        0x234cff,
+        -80,
+        20,
+        -150,
+        3500,
+        55
+    );
+
+
+const nebulaPurple =
+    nebula(
+        0x852bff,
+        90,
+        -20,
+        -270,
+        3200,
+        65
+    );
+
+
+const nebulaRed =
+    nebula(
+        0xff275f,
+        -100,
+        35,
+        -430,
+        2500,
+        60
+    );
+
+
+// ------------------------------------------------------------
+// SUN
+// ------------------------------------------------------------
 
 const sunGroup =
     new THREE.Group();
@@ -160,202 +301,191 @@ const sunGroup =
 scene.add(sunGroup);
 
 
-const sunGeometry =
-    new THREE.SphereGeometry(
-        6,
-        64,
-        64
-    );
-
-
-const sunMaterial =
-    new THREE.MeshBasicMaterial({
-        color: 0xff9d22
-    });
-
-
 const sun =
     new THREE.Mesh(
-        sunGeometry,
-        sunMaterial
+
+        new THREE.SphereGeometry(
+            6.5,
+            64,
+            64
+        ),
+
+        new THREE.MeshBasicMaterial({
+            color: 0xffa52b
+        })
+
     );
 
 sunGroup.add(sun);
 
 
-// SUN GLOW
-
-const glowGeometry =
-    new THREE.SphereGeometry(
-        8,
-        64,
-        64
+const sunLight =
+    new THREE.PointLight(
+        0xffb45c,
+        7,
+        500
     );
 
-
-const glowMaterial =
-    new THREE.MeshBasicMaterial({
-
-        color: 0xff5500,
-
-        transparent: true,
-
-        opacity: 0.15
-
-    });
+sunGroup.add(sunLight);
 
 
-const sunGlow =
-    new THREE.Mesh(
-        glowGeometry,
-        glowMaterial
-    );
+// glow spheres
 
-sunGroup.add(sunGlow);
+for (
+    let i = 0;
+    i < 5;
+    i++
+) {
+
+    const glow =
+        new THREE.Mesh(
+
+            new THREE.SphereGeometry(
+                7.5 + i * 2,
+                32,
+                32
+            ),
+
+            new THREE.MeshBasicMaterial({
+                color: 0xff5d19,
+                transparent: true,
+                opacity:
+                    .07 / (i + 1),
+                depthWrite: false
+            })
+
+        );
+
+    sunGroup.add(glow);
+}
 
 
-// ======================================================
-// 5. PLANET DATA
-// ======================================================
+// ------------------------------------------------------------
+// PLANETS
+// ------------------------------------------------------------
 
 const planetData = [
 
     {
-        name: "ABOUT",
-
+        name: "ORIGIN",
         title: "THE EXPLORER",
 
-        description:
+        text:
             "I am Pratik — a B.Tech CSE Cyber Security student exploring technology, software, systems and the digital world.",
 
-        color: 0x287cff,
-
-        radius: 3,
-
-        distance: 20,
-
-        speed: 0.003,
-
-        cameraZ: 17
-
-    },
-
-    {
-
-        name: "CYBER",
-
-        title: "CYBER SECURITY",
-
-        description:
-            "My strongest interest is cybersecurity — ethical hacking, web security, phishing awareness, account security and understanding how attacks actually work.",
-
-        color: 0x7b3cff,
-
-        radius: 3.5,
-
-        distance: 35,
-
-        speed: 0.0023,
-
-        cameraZ: 32
-
-    },
-
-    {
-
-        name: "CODE",
-
-        title: "BUILDING WITH CODE",
-
-        description:
-            "I am learning C, DSA, web development, backend technologies and gradually moving towards building real software and security projects.",
-
-        color: 0x00d9ff,
+        color: 0x326cff,
+        atmosphere: 0x55c9ff,
 
         radius: 3.2,
+        distance: 21,
 
-        distance: 50,
+        speed: .0028,
 
-        speed: 0.0018,
-
-        cameraZ: 47
-
+        camera: 17
     },
 
     {
+        name: "CYBER-01",
+        title: "CYBER SECURITY",
 
-        name: "PROJECTS",
+        text:
+            "My strongest interest is cybersecurity — ethical hacking, web security, phishing awareness, account security and understanding how attacks actually work.",
 
+        color: 0x5426e8,
+        atmosphere: 0x9a6cff,
+
+        radius: 3.8,
+        distance: 37,
+
+        speed: .0021,
+
+        camera: 33
+    },
+
+    {
+        name: "CODE-01",
+        title: "BUILDING WITH CODE",
+
+        text:
+            "I am learning C, DSA, web development and backend technologies while building the foundations needed to create real software.",
+
+        color: 0x009dcc,
+        atmosphere: 0x50eaff,
+
+        radius: 3.5,
+        distance: 53,
+
+        speed: .0017,
+
+        camera: 49
+    },
+
+    {
+        name: "PROJECT-01",
         title: "DIGITAL EXPERIMENTS",
 
-        description:
-            "Websites, AI experiments, futuristic interfaces and cybersecurity projects are part of my journey from beginner to builder.",
+        text:
+            "Websites, AI experiments, futuristic interfaces and cybersecurity projects are part of my journey from learner to builder.",
 
-        color: 0xff357a,
-
-        radius: 3.7,
-
-        distance: 65,
-
-        speed: 0.0014,
-
-        cameraZ: 62
-
-    },
-
-    {
-
-        name: "BHUMIX",
-
-        title: "BHUMIX CORE",
-
-        description:
-            "Bhumix Core is my tech-focused creative space where I explore cybersecurity, AI, futuristic technology and digital experiments.",
-
-        color: 0xff4d00,
+        color: 0xb72c62,
+        atmosphere: 0xff6499,
 
         radius: 4,
 
-        distance: 82,
+        distance: 69,
 
-        speed: 0.001,
+        speed: .0013,
 
-        cameraZ: 79
+        camera: 65,
 
+        rings: true
     },
 
     {
+        name: "BHUMIX-01",
+        title: "BHUMIX CORE",
 
-        name: "FUTURE",
+        text:
+            "Bhumix Core is my tech-focused creative space exploring cybersecurity, AI, futuristic technology and digital experiments.",
 
+        color: 0xb84b20,
+        atmosphere: 0xff9b52,
+
+        radius: 4.4,
+
+        distance: 86,
+
+        speed: .001,
+
+        camera: 82
+    },
+
+    {
+        name: "FUTURE-01",
         title: "THE NEXT CHAPTER",
 
-        description:
-            "This universe is still expanding. More projects, experiments and ideas are coming.",
+        text:
+            "This universe is still expanding. More projects, experiments, software and cybersecurity ideas are coming.",
 
-        color: 0x4dff88,
+        color: 0x2fae67,
+        atmosphere: 0x6dffb2,
 
-        radius: 3,
+        radius: 3.5,
 
-        distance: 100,
+        distance: 104,
 
-        speed: 0.0008,
+        speed: .0007,
 
-        cameraZ: 97
-
+        camera: 100
     }
 
 ];
 
 
-// ======================================================
-// 6. CREATE PLANETS
-// ======================================================
-
 const planets = [];
 
 
-function createPlanet(data) {
+function makePlanet(data) {
 
     const orbit =
         new THREE.Group();
@@ -363,100 +493,117 @@ function createPlanet(data) {
     scene.add(orbit);
 
 
-    const geometry =
-        new THREE.SphereGeometry(
-            data.radius,
-            48,
-            48
-        );
-
-
-    const material =
-        new THREE.MeshStandardMaterial({
-
-            color: data.color,
-
-            roughness: 0.65,
-
-            metalness: 0.25
-
-        });
-
+    // planet
 
     const planet =
         new THREE.Mesh(
-            geometry,
-            material
+
+            new THREE.SphereGeometry(
+                data.radius,
+                64,
+                64
+            ),
+
+            new THREE.MeshStandardMaterial({
+                color: data.color,
+                roughness: .75,
+                metalness: .04
+            })
+
         );
 
 
     planet.position.x =
         data.distance;
 
-
     orbit.add(planet);
 
 
-    // --------------------------
-    // ATMOSPHERE
-    // --------------------------
-
-    const atmosphereGeometry =
-        new THREE.SphereGeometry(
-            data.radius * 1.12,
-            48,
-            48
-        );
-
-
-    const atmosphereMaterial =
-        new THREE.MeshBasicMaterial({
-
-            color: data.color,
-
-            transparent: true,
-
-            opacity: 0.12,
-
-            side: THREE.BackSide
-
-        });
-
+    // atmosphere
 
     const atmosphere =
         new THREE.Mesh(
-            atmosphereGeometry,
-            atmosphereMaterial
+
+            new THREE.SphereGeometry(
+                data.radius * 1.1,
+                48,
+                48
+            ),
+
+            new THREE.MeshBasicMaterial({
+
+                color:
+                    data.atmosphere,
+
+                transparent: true,
+
+                opacity: .13,
+
+                side:
+                    THREE.BackSide,
+
+                depthWrite: false
+            })
+
         );
 
 
     planet.add(atmosphere);
 
 
-    // --------------------------
-    // ORBIT
-    // --------------------------
+    // rings
+
+    if (data.rings) {
+
+        const ring =
+            new THREE.Mesh(
+
+                new THREE.RingGeometry(
+                    data.radius * 1.35,
+                    data.radius * 2.25,
+                    100
+                ),
+
+                new THREE.MeshBasicMaterial({
+
+                    color: 0xb99aa0,
+
+                    transparent: true,
+
+                    opacity: .6,
+
+                    side:
+                        THREE.DoubleSide
+
+                })
+
+            );
+
+
+        ring.rotation.x =
+            Math.PI / 2.35;
+
+        planet.add(ring);
+    }
+
+
+    // orbit path
 
     const curve =
         new THREE.EllipseCurve(
-
             0,
             0,
-
             data.distance,
             data.distance,
-
             0,
             Math.PI * 2,
-
             false,
             0
-
         );
 
 
     const points =
-        curve.getPoints(180);
+        curve.getPoints(240);
 
 
     const orbitGeometry =
@@ -464,77 +611,170 @@ function createPlanet(data) {
             .setFromPoints(points);
 
 
-    const orbitMaterial =
-        new THREE.LineBasicMaterial({
-
-            color: data.color,
-
-            transparent: true,
-
-            opacity: 0.12
-
-        });
-
-
     const orbitLine =
         new THREE.LineLoop(
+
             orbitGeometry,
-            orbitMaterial
+
+            new THREE.LineBasicMaterial({
+
+                color: data.color,
+
+                transparent: true,
+
+                opacity: .1
+
+            })
+
         );
 
 
     orbitLine.rotation.x =
         Math.PI / 2;
 
-
     scene.add(orbitLine);
 
 
     planets.push({
-
         data,
-
         orbit,
-
         planet,
-
-        atmosphere,
-
-        orbitLine
-
+        atmosphere
     });
-
 }
 
 
 planetData.forEach(
-    createPlanet
+    makePlanet
 );
 
 
-// ======================================================
-// 7. SECTION UI
-// ======================================================
+// ------------------------------------------------------------
+// ASTEROIDS
+// ------------------------------------------------------------
+
+const asteroidGroup =
+    new THREE.Group();
+
+scene.add(asteroidGroup);
+
+
+const asteroidGeometry =
+    new THREE.IcosahedronGeometry(
+        .4,
+        0
+    );
+
+
+const asteroidMaterial =
+    new THREE.MeshStandardMaterial({
+        color: 0x777777,
+        roughness: 1
+    });
+
+
+for (
+    let i = 0;
+    i < 500;
+    i++
+) {
+
+    const asteroid =
+        new THREE.Mesh(
+            asteroidGeometry,
+            asteroidMaterial
+        );
+
+
+    const angle =
+        Math.random() *
+        Math.PI * 2;
+
+
+    const radius =
+        43 +
+        Math.random() * 10;
+
+
+    asteroid.position.set(
+
+        Math.cos(angle) *
+            radius,
+
+        (
+            Math.random() -
+            .5
+        ) * 7,
+
+        Math.sin(angle) *
+            radius
+
+    );
+
+
+    const scale =
+        .15 +
+        Math.random() * 1.5;
+
+
+    asteroid.scale.setScalar(
+        scale
+    );
+
+
+    asteroid.rotation.set(
+
+        Math.random() * 3,
+
+        Math.random() * 3,
+
+        Math.random() * 3
+
+    );
+
+
+    asteroidGroup.add(
+        asteroid
+    );
+}
+
+
+// ------------------------------------------------------------
+// UI
+// ------------------------------------------------------------
 
 const title =
     document.getElementById(
-        "section-title"
+        "title"
     );
 
 const description =
     document.getElementById(
-        "section-description"
+        "description"
     );
 
-const number =
+const counter =
+    document.querySelector(
+        ".counter"
+    );
+
+const label =
     document.getElementById(
-        "section-number"
+        "planet-label"
+    );
+
+const progress =
+    document.getElementById(
+        "progress"
     );
 
 
-// ======================================================
-// 8. SCROLL → CAMERA
-// ======================================================
+let section = -1;
+
+
+// ------------------------------------------------------------
+// SCROLL
+// ------------------------------------------------------------
 
 let scrollTarget = 0;
 
@@ -546,211 +786,183 @@ window.addEventListener(
     () => {
 
         const max =
-            document.body.scrollHeight -
-            window.innerHeight;
+            document.documentElement
+                .scrollHeight -
+            innerHeight;
 
+        if (max <= 0) return;
 
         scrollTarget =
-            window.scrollY / max;
+            scrollY / max;
 
+        scrollTarget =
+            THREE.MathUtils.clamp(
+                scrollTarget,
+                0,
+                1
+            );
+
+        progress.style.height =
+            `${scrollTarget * 100}%`;
+
+    },
+    {
+        passive: true
     }
 );
 
 
-// ======================================================
-// 9. ACTIVE PLANET
-// ======================================================
+// ------------------------------------------------------------
+// SECTION CHANGE
+// ------------------------------------------------------------
 
-let activePlanet = -1;
+function updateSection(i) {
 
+    if (i === section)
+        return;
 
-function updateSection(index) {
-
-    if (
-        index === activePlanet
-    ) return;
-
-
-    activePlanet = index;
-
+    section = i;
 
     const data =
-        planetData[index];
+        planetData[i];
 
 
     gsap.to(
-        "#info",
+        "#content",
         {
-
             opacity: 0,
-
-            y: 20,
-
-            duration: 0.25,
+            y: 18,
+            duration: .22,
 
             onComplete: () => {
 
-                number.innerText =
-                    String(index + 1)
-                        .padStart(2, "0");
+                counter.textContent =
+                    `${String(i + 1).padStart(2,"0")} / 06`;
 
-
-                title.innerText =
+                title.textContent =
                     data.title;
 
+                description.textContent =
+                    data.text;
 
-                description.innerText =
-                    data.description;
+                label.textContent =
+                    data.name;
 
 
                 gsap.to(
-                    "#info",
+                    "#content",
                     {
-
                         opacity: 1,
-
                         y: 0,
-
-                        duration: 0.6
-
+                        duration: .65,
+                        ease:
+                            "power3.out"
                     }
                 );
 
             }
-
         }
     );
-
 }
 
 
-// ======================================================
-// 10. CAMERA CINEMATIC MOVEMENT
-// ======================================================
+// ------------------------------------------------------------
+// CAMERA
+// ------------------------------------------------------------
 
-function updateCamera() {
+function cameraTravel() {
 
-    const total =
-        planetData.length;
+    const max =
+        planetData.length - 1;
 
+    const position =
+        scrollCurrent * max;
 
-    const exact =
-        scrollCurrent *
-        (total - 1);
+    const current =
+        Math.floor(position);
 
-
-    const index =
-        Math.floor(exact);
-
-
-    const nextIndex =
+    const next =
         Math.min(
-            index + 1,
-            total - 1
+            current + 1,
+            max
         );
 
-
-    const localProgress =
-        exact - index;
-
-
-    const currentPlanet =
-        planetData[index];
+    const local =
+        position - current;
 
 
-    const nextPlanet =
-        planetData[nextIndex];
+    const a =
+        planetData[current];
+
+    const b =
+        planetData[next];
 
 
-    const currentZ =
-        currentPlanet.cameraZ;
-
-
-    const nextZ =
-        nextPlanet.cameraZ;
-
-
-    const desiredZ =
+    const targetZ =
         THREE.MathUtils.lerp(
-            currentZ,
-            nextZ,
-            localProgress
+            a.camera,
+            b.camera,
+            local
         );
 
 
-    camera.position.z =
-        desiredZ;
+    camera.position.z +=
+        (
+            targetZ -
+            camera.position.z
+        ) * .035;
 
 
-    // cinematic vertical movement
-
-    camera.position.y =
-        THREE.MathUtils.lerp(
-            8,
-            3,
-            localProgress
-        );
+    camera.position.y +=
+        (
+            5 -
+            camera.position.y
+        ) * .03;
 
 
-    // subtle X movement
-
-    camera.position.x =
-        Math.sin(
-            scrollCurrent * Math.PI
-        ) * 3;
-
-
-    camera.lookAt(
-        0,
-        0,
-        0
-    );
-
-
-    updateSection(index);
-
+    updateSection(current);
 }
 
 
-// ======================================================
-// 11. MOUSE MOVEMENT
-// ======================================================
+// ------------------------------------------------------------
+// MOUSE
+// ------------------------------------------------------------
 
-let mouseTargetX = 0;
+let mx = 0;
+let my = 0;
 
-let mouseTargetY = 0;
-
-let mouseX = 0;
-
-let mouseY = 0;
+let tx = 0;
+let ty = 0;
 
 
 window.addEventListener(
     "mousemove",
-    (event) => {
+    e => {
 
-        mouseTargetX =
+        tx =
             (
-                event.clientX /
-                window.innerWidth -
-                0.5
+                e.clientX /
+                innerWidth -
+                .5
             ) * 2;
 
-
-        mouseTargetY =
+        ty =
             (
-                event.clientY /
-                window.innerHeight -
-                0.5
+                e.clientY /
+                innerHeight -
+                .5
             ) * 2;
 
+    },
+    {
+        passive: true
     }
 );
 
 
-// ======================================================
-// 12. ANIMATION LOOP
-// ======================================================
+// ------------------------------------------------------------
+// ANIMATION
+// ------------------------------------------------------------
 
 const clock =
     new THREE.Clock();
@@ -763,149 +975,165 @@ function animate() {
     );
 
 
-    const time =
+    const t =
         clock.getElapsedTime();
 
 
-    // --------------------------------
-    // SMOOTH SCROLL
-    // --------------------------------
+    // smooth scroll
 
     scrollCurrent +=
         (
             scrollTarget -
             scrollCurrent
-        ) * 0.045;
+        ) * .045;
 
 
-    updateCamera();
+    cameraTravel();
 
 
-    // --------------------------------
-    // SUN
-    // --------------------------------
+    // sun
 
-    sun.rotation.y += 0.003;
+    sun.rotation.y += .002;
 
-
-    sunGlow.scale.setScalar(
-
+    sun.scale.setScalar(
         1 +
-        Math.sin(time * 2) * 0.04
-
+        Math.sin(t * 2) * .025
     );
 
 
-    // --------------------------------
-    // PLANETS
-    // --------------------------------
+    // planets
 
     planets.forEach(
-        (p) => {
+        p => {
 
             p.orbit.rotation.y +=
                 p.data.speed;
 
-
             p.planet.rotation.y +=
-                0.006;
-
-
-            const pulse =
-                1 +
-                Math.sin(
-                    time * 1.5
-                ) * 0.015;
-
+                .004;
 
             p.atmosphere.scale.setScalar(
-                pulse
+                1 +
+                Math.sin(t * 1.5)
+                * .02
             );
 
         }
     );
 
 
-    // --------------------------------
-    // STARS
-    // --------------------------------
+    // asteroid field
 
-    stars.rotation.y =
-        time * 0.001;
+    asteroidGroup.rotation.y +=
+        .0008;
 
 
-    stars.rotation.x =
-        time * 0.0003;
+    asteroidGroup.rotation.z =
+        Math.sin(t * .1) * .015;
 
 
-    // --------------------------------
-    // MOUSE PARALLAX
-    // --------------------------------
+    // nebula movement
 
-    mouseX +=
-        (
-            mouseTargetX -
-            mouseX
-        ) * 0.025;
+    nebulaBlue.rotation.y +=
+        .00012;
 
+    nebulaPurple.rotation.y -=
+        .00009;
 
-    mouseY +=
-        (
-            mouseTargetY -
-            mouseY
-        ) * 0.025;
+    nebulaRed.rotation.y +=
+        .00007;
 
 
-    camera.rotation.z =
-        mouseX * 0.01;
+    // stars
+
+    starsFar.rotation.y =
+        t * .00025;
+
+    starsNear.rotation.y =
+        -t * .0006;
+
+
+    // mouse camera
+
+    mx +=
+        (tx - mx) * .025;
+
+    my +=
+        (ty - my) * .025;
 
 
     camera.position.x +=
         (
-            mouseX * 2 -
+            mx * 3 -
             camera.position.x
-        ) * 0.01;
+        ) * .015;
+
+
+    camera.position.y +=
+        (
+            5 -
+            my * 2 -
+            camera.position.y
+        ) * .015;
+
+
+    camera.rotation.z +=
+        (
+            mx * .006 -
+            camera.rotation.z
+        ) * .02;
+
+
+    camera.lookAt(
+        0,
+        0,
+        0
+    );
 
 
     renderer.render(
         scene,
         camera
     );
-
 }
 
 
 animate();
 
 
-// ======================================================
-// 13. RESIZE
-// ======================================================
+// ------------------------------------------------------------
+// RESIZE
+// ------------------------------------------------------------
 
 window.addEventListener(
     "resize",
     () => {
 
         camera.aspect =
-            window.innerWidth /
-            window.innerHeight;
-
+            innerWidth /
+            innerHeight;
 
         camera.updateProjectionMatrix();
 
-
         renderer.setSize(
-            window.innerWidth,
-            window.innerHeight
+            innerWidth,
+            innerHeight
+        );
+
+        renderer.setPixelRatio(
+            Math.min(
+                devicePixelRatio,
+                2
+            )
         );
 
     }
 );
 
 
-// ======================================================
-// 14. LOADER
-// ======================================================
+// ------------------------------------------------------------
+// LOADER
+// ------------------------------------------------------------
 
 window.addEventListener(
     "load",
@@ -914,28 +1142,15 @@ window.addEventListener(
         setTimeout(
             () => {
 
-                const loader =
-                    document.getElementById(
+                document
+                    .getElementById(
                         "loader"
-                    );
-
-
-                loader.style.opacity =
-                    "0";
-
-
-                setTimeout(
-                    () => {
-
-                        loader.style.display =
-                            "none";
-
-                    },
-                    1000
-                );
+                    )
+                    .classList
+                    .add("hide");
 
             },
-            1000
+            1500
         );
 
     }
