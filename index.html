@@ -4,83 +4,122 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Pratik — Cyber Security Explorer</title>
+    <title>PRATIK — Digital Universe</title>
 
     <link rel="stylesheet" href="style.css">
 
-    <!-- Three.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
-    <!-- GSAP -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 </head>
 
 <body>
 
-    <div id="loader">
-        <div class="loader-text">
-            INITIALIZING UNIVERSE...
+<div id="loader">
+    <div class="loader-inner">
+        <div class="loader-orbit"></div>
+        <div class="loader-title">PRATIK.EXE</div>
+        <div class="loader-sub">ENTERING DIGITAL SPACE</div>
+        <div class="loader-progress">
+            <span></span>
         </div>
     </div>
+</div>
 
-    <div id="hud">
+<canvas id="universe"></canvas>
 
-        <div class="logo">
-            PRATIK<span>.EXE</span>
-        </div>
+<div class="vignette"></div>
+<div class="noise"></div>
 
-        <div class="status">
-            <span class="dot"></span>
-            SYSTEM ONLINE
-        </div>
+<header class="hud">
 
+    <div class="brand">
+        PRATIK<span> / 01</span>
     </div>
 
-
-    <div id="info">
-
-        <div id="section-number">01</div>
-
-        <h1 id="section-title">
-            THE EXPLORER
-        </h1>
-
-        <p id="section-description">
-            Welcome to my digital universe.
-        </p>
-
-        <div id="scroll-hint">
-            SCROLL TO EXPLORE ↓
-        </div>
-
+    <div class="system">
+        <span></span>
+        SYSTEM ONLINE
     </div>
 
-
-    <div id="planet-label"></div>
-
-
-    <canvas id="universe"></canvas>
+</header>
 
 
-    <!-- Scroll sections -->
-    <main>
-
-        <section class="scroll-section" data-section="0"></section>
-
-        <section class="scroll-section" data-section="1"></section>
-
-        <section class="scroll-section" data-section="2"></section>
-
-        <section class="scroll-section" data-section="3"></section>
-
-        <section class="scroll-section" data-section="4"></section>
-
-        <section class="scroll-section" data-section="5"></section>
-
-    </main>
+<div class="top-center">
+    DEEP SPACE // DIGITAL ARCHIVE
+</div>
 
 
-    <script src="script.js"></script>
+<section id="content">
+
+    <div class="counter">01 / 06</div>
+
+    <div class="eyebrow">
+        HUMAN // TECHNOLOGY // CYBERSPACE
+    </div>
+
+    <h1 id="title">
+        THE<br>EXPLORER
+    </h1>
+
+    <p id="description">
+        Welcome to my digital universe.
+    </p>
+
+    <div class="explore">
+        <span>SCROLL TO TRAVEL</span>
+        <i></i>
+    </div>
+
+</section>
+
+
+<div id="planet-card">
+
+    <div class="planet-card-line"></div>
+
+    <span id="planet-label">
+        UNKNOWN OBJECT
+    </span>
+
+</div>
+
+
+<div class="right-panel">
+
+    <div class="coordinates">
+        <span>SECTOR</span>
+        PRATIK-01
+        <br><br>
+        <span>STATUS</span>
+        EXPLORING
+    </div>
+
+    <div class="progress-track">
+        <div id="progress"></div>
+    </div>
+
+</div>
+
+
+<div class="bottom-left">
+    2026<br>
+    CSE // CYBER SECURITY
+</div>
+
+
+<div id="scroll-space">
+
+    <section></section>
+    <section></section>
+    <section></section>
+    <section></section>
+    <section></section>
+    <section></section>
+
+</div>
+
+
+<script src="script.js"></script>
 
 </body>
 </html>
