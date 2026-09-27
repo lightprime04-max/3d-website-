@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Pratik — Cyber Security Explorer</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+</head>
+
+<body>
+
+    <div id="loader">
+        <div class="loader-text">
+            INITIALIZING UNIVERSE...
+        </div>
+    </div>
+
+    <div id="hud">
+
+        <div class="logo">
+            PRATIK<span>.EXE</span>
+        </div>
+
+        <div class="status">
+            <span class="dot"></span>
+            SYSTEM ONLINE
+        </div>
+
+    </div>
+
+
+    <div id="info">
+
+        <div id="section-number">01</div>
+
+        <h1 id="section-title">
+            THE EXPLORER
+        </h1>
+
+        <p id="section-description">
+            Welcome to my digital universe.
+        </p>
+
+        <div id="scroll-hint">
+            SCROLL TO EXPLORE ↓
+        </div>
+
+    </div>
+
+
+    <div id="planet-label"></div>
+
+
+    <canvas id="universe"></canvas>
+
+
+    <!-- Scroll sections -->
+    <main>
+
+        <section class="scroll-section" data-section="0"></section>
+
+        <section class="scroll-section" data-section="1"></section>
+
+        <section class="scroll-section" data-section="2"></section>
+
+        <section class="scroll-section" data-section="3"></section>
+
+        <section class="scroll-section" data-section="4"></section>
+
+        <section class="scroll-section" data-section="5"></section>
+
+    </main>
+
+
+    <script src="script.js"></script>
+
+</body>
+</html>
